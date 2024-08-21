@@ -41,23 +41,32 @@ def buscarCoincidencia(solicitudes: list) -> list:
     """Ingresas con una lista de palabras e imprimes los datos completos de la tarea si hay 
     sólo una coincidencia, la sublista de tareas con las que coincide las palabras (si hay 
     más de una coincidencia), o imprimes un error si no hay coincidencias."""
-    tareas = []
+    tareas = [[],[]]
     with open(data, "r") as f:
         reader = csv.reader(f)
         for row in reader:
-            if row[1] == "tarea": continue
+            if row[1] == "tarea": tareas[1] = row
             if coincidencia(solicitudes, row[1]):
-                tareas.append(row)
+                tareas[0].append(row)
     return tareas
 
 #Printing methods
 def imprimirArbol() -> None:
-    arbol = []
+    arbol = dict()
     with open(data, "r") as f:
         reader = csv.reader(f)
         for row in reader:
-            arbol.append("+ "+row[1])
-    print('\n'.join(arbol[1:]))
+            if row[1] == "tarea": continue
+            cat = row[-1]
+            name = "  + "+row[1]
+            if cat in arbol.keys():
+                arbol[cat] += [name]
+            else: 
+                arbol[cat] = [name]
+    print('\nLista de pendientes actual: \n')
+    for key in arbol:
+        print(f'{key.upper()}:')
+        print('\n'.join(arbol[key]))
 
 def imprimirsubLista(tareas: list) -> None:
     print('\n'.join(["+ "+tarea[1] for tarea in tareas]))
@@ -65,14 +74,17 @@ def imprimirsubLista(tareas: list) -> None:
 
 def imprimirDetalles() -> None:
     solicitudes = input('Palabras clave: ').split(', ')
-    tareas = buscarCoincidencia(solicitudes)
+    tareas,descripciones = buscarCoincidencia(solicitudes)
     try:
         if len(tareas) > 1: 
             print('¿Puedes ser más específico?')
             imprimirsubLista(tareas)
             imprimirDetalles()
         else:
-            print('\n'.join(tareas[0]))
+            print('\n')
+            for j in range(len(descripciones)):
+                print(f'{descripciones[j].upper()}: {tareas[0][j]}')
+        #¡            print('\n'.join(tareas[0]))
     except IndexError: 
         print(f'No existe ninguna tarea que coincida con tu petición')
 
@@ -90,7 +102,7 @@ def insertarTarea() -> None:
 
 def eliminarTarea() -> None:
     solicitudes = input('Palabras clave: ').split(', ')
-    tareas = buscarCoincidencia(solicitudes)
+    tareas = buscarCoincidencia(solicitudes)[0]
     try:
         if len(tareas) > 1:
             print("¿Cuál de los siguientes pendientes quieres eliminar?")
