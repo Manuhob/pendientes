@@ -129,24 +129,36 @@ def editarTarea() -> None:
 def clear() -> None:
     os.system('clear')
     print(f"""{f.YELLOW}
-    (print) Imprimir lista de tareas pendientes
-    (remove) Eliminar un pendiente
-    (insert) Insertar pendiente
-    (details) Imprimir detalles de pendiente
-    (exit) Salir del menu
-    (clear) Clear screen
+    Autor: Manuel Sedano Mendoza
+    Licencia: MIT 
+    Lenguaje: {f.CYAN} Python3{f.YELLOW}
+    Descripción: Herramienta para manejar tareas pendientes
+
+    Uso:
+       (print) Imprimir lista de tareas pendientes
+       (remove) Eliminar un pendiente
+       (insert) Insertar pendiente
+       (details) Imprimir detalles de pendiente
+       (exit) Salir del menu
+       (clear) Limpiar pantalla
     """)
 
 def cli() -> None:
-    help_msg = f"""{f.YELLOW}
-    (print) Imprimir lista de tareas pendientes
-    (remove) Eliminar un pendiente
-    (insert) Insertar pendiente
-    (details) Imprimir detalles de pendiente
-    (exit) Salir del menu
-    (clear) Clear screen
+    author = f"""{f.YELLOW}
+    Autor: Manuel Sedano Mendoza
+    Licencia: MIT 
+    Lenguaje: {f.CYAN} Python3{f.YELLOW}
+    Descripción: Herramienta para manejar tareas pendientes
+
+    Uso:
+       (print) Imprimir lista de tareas pendientes
+       (remove) Eliminar un pendiente
+       (insert) Insertar pendiente
+       (details) Imprimir detalles de pendiente
+       (exit) Salir del menu
+       (clear) Limpiar pantalla
     """
-    print(help_msg)
+    print(author)
     while True:
         option = input(f"  {f.YELLOW}[*] {f.CYAN}-> {f.WHITE}")
         if option == 'print': 

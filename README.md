@@ -9,7 +9,7 @@ Esta es la primer versión de *pendientes*, un CLI escrito en Python3 para admin
 
 ## Instalación
 ```bash
-sudo wget https://raw.githubusercontent.com/Manuhob/master/pendientes.py -O /usr/local/bin/pendientes
+sudo wget https://raw.githubusercontent.com/Manuhob/pendientes/main/pendientes.py -O /usr/local/bin/pendientes
 sudo chmod a+rx /usr/local/bin/pendientes
 ```
 
@@ -28,7 +28,7 @@ lo cual despliega una entrada de texto, en la cual se pueden teclear palabras cl
 
 El  CLI tiene una interface con descripción de comandos a la cual se puede acceder con el comando 
 ```Python3
-pendientes 
+pendientes -c
 ```
 
 Para más información, usar el comando
