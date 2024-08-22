@@ -27,6 +27,7 @@ parser.add_argument('-c', '--cli', help="Entra en modo CLI", action="store_true"
 parser.add_argument('-rm', '--remove', help="Elimina una tarea especificada con palabras clave separadas por comas", action="store_true")
 parser.add_argument('-i', '--insertar', help="Insertar tarea nueva", action="store_true")
 parser.add_argument('-d', '--detalles', help="Imprimir detalles completos de una tarea existente", action="store_true")
+parser.add_argument('-cat', '--categoria', help="Imprimir sublista de tareas pendientes de cierta categoría", action="store")
 
 args = parser.parse_args()
 
@@ -51,22 +52,34 @@ def buscarCoincidencia(solicitudes: list) -> list:
     return tareas
 
 #Printing methods
-def imprimirArbol() -> None:
+def obtenerArbol() -> None:
     arbol = dict()
     with open(data, "r") as f:
         reader = csv.reader(f)
         for row in reader:
             if row[1] == "tarea": continue
-            cat = row[-1]
+            cat = row[-1].lower()
             name = "  + "+row[1]
             if cat in arbol.keys():
                 arbol[cat] += [name]
             else: 
                 arbol[cat] = [name]
+    return arbol
+
+def imprimirArbol() -> None:
+    arbol = obtenerArbol()
     print('\nLista de pendientes actual: \n')
     for key in arbol:
         print(f'{key.upper()}:')
         print('\n'.join(arbol[key]))
+
+def imprimirCategoria(key: str) -> None:
+    arbol = obtenerArbol()
+    try:
+        print(f'\nPendientes de {key.upper()}:')
+        print('\n'.join(arbol[key]))
+    except KeyError:
+        print(f'No existe una categoría con nombre {key}')
 
 def imprimirsubLista(tareas: list) -> None:
     print('\n'.join(["+ "+tarea[1] for tarea in tareas]))
@@ -176,7 +189,9 @@ def cli() -> None:
 
 
 def main() -> None:
-    """"""
+    if args.categoria:
+        imprimirCategoria(args.categoria)
+        return 
     if args.cli:
         cli()
     elif args.remove:
@@ -187,6 +202,7 @@ def main() -> None:
         imprimirDetalles()
     else:
         imprimirArbol()
+
    
 if __name__ == "__main__":
     main()
