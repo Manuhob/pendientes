@@ -6,20 +6,14 @@ import time
 import csv 
 import os.path
 import os
-# Use date module for dates
 
-
-#Entradas:
-#Editar
-#eliminar
-
-#En algún momento quiero agregarle detalles de prioridad y periodicidad.
-
-#Por ejemplo, que al pasar cierto tiempo, las prioridades se actualizen.
-
+# Directorio del archivo principal donde se guardan los pendientes
 home = os.path.expanduser("~")
 data = home+"/.pendientes.csv"
-### Setting up the parser and adding arguments 
+
+
+
+### Agregar el parser de argumentos 
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-p', '--print', help="Imprime las tareas pendientes actuales", action="store_true")
@@ -31,10 +25,9 @@ parser.add_argument('-cat', '--categoria', help="Imprimir sublista de tareas pen
 
 args = parser.parse_args()
 
-#Two methods for searching coincidences of a request
+
+#Métodos de búsqueda de coincidencia de cadenas para solicitudes
 def coincidencia(lista: list, cadena: str) -> bool:
-#    if len(cadena) == 0 or len(lista) ==0:
-#        raise ValueError
     noncoincidence = False in [s.lower() in cadena.lower() for s in lista]
     return not noncoincidence 
 
@@ -51,7 +44,7 @@ def buscarCoincidencia(solicitudes: list) -> list:
                 tareas[0].append(row)
     return tareas
 
-#Printing methods
+#Métodos para imprimir información
 def obtenerArbol() -> None:
     arbol = dict()
     with open(data, "r") as f:
@@ -77,7 +70,7 @@ def imprimirCategoria(key: str) -> None:
     arbol = obtenerArbol()
     try:
         print(f'\nPendientes de {key.upper()}:')
-        print('\n'.join(arbol[key]))
+        print('\n'.join(arbol[key.lower()]))
     except KeyError:
         print(f'No existe una categoría con nombre {key}')
 
@@ -97,10 +90,10 @@ def imprimirDetalles() -> None:
             print('\n')
             for j in range(len(descripciones)):
                 print(f'{descripciones[j].upper()}: {tareas[0][j]}')
-        #¡            print('\n'.join(tareas[0]))
     except IndexError: 
         print(f'No existe ninguna tarea que coincida con tu petición')
 
+#Métodos de modificación de tareas
 def insertarTarea() -> None:
     existenceofFile = os.path.isfile(data)
     with open(data, 'a', newline='') as csvfile:
@@ -139,9 +132,12 @@ def eliminarTarea() -> None:
 def editarTarea() -> None:
     pass
 
+#Métodos para interface de usuario
 def clear() -> None:
     os.system('clear')
     print(f"""{f.YELLOW}
+            PENDIENTES
+
     Autor: Manuel Sedano Mendoza
     Licencia: MIT 
     Lenguaje: {f.CYAN} Python3{f.YELLOW}
@@ -149,11 +145,7 @@ def clear() -> None:
 
     Uso:
        (print) Imprimir lista de tareas pendientes
-       (remove) Eliminar un pendiente
-       (insert) Insertar pendiente
-       (details) Imprimir detalles de pendiente
-       (exit) Salir del menu
-       (clear) Limpiar pantalla
+       (help) Mensaje de ayuda para otros comandos
     """)
 
 def cli() -> None:
@@ -165,15 +157,21 @@ def cli() -> None:
 
     Uso:
        (print) Imprimir lista de tareas pendientes
-       (remove) Eliminar un pendiente
-       (insert) Insertar pendiente
-       (details) Imprimir detalles de pendiente
-       (exit) Salir del menu
-       (clear) Limpiar pantalla
+       (help) Mensaje de ayuda para otros comandos
     """
+    help_msg = f"""options:
+        help            Muestra mensaje de ayuda
+        print           Imprime las tareas pendientes actuales
+        clear           Limpia la pantalla
+        remove          Elimina una tarea especificada con palabras clave separadas por comas
+        insert          Insertar tarea nueva
+        details         Imprimir detalles completos de una tarea existente
+        category        Imprimir sublista de tareas pendientes de cierta categoría"""
     print(author)
     while True:
         option = input(f"  {f.YELLOW}[*] {f.CYAN}-> {f.WHITE}")
+        if option == 'help':
+            print(help_msg)
         if option == 'print': 
             imprimirArbol()
         if option == 'insert': 
@@ -186,6 +184,8 @@ def cli() -> None:
             break
         if option == 'clear':
             clear()
+        if option == 'category':
+            imprimirCategoria(input("Nombre de categoria: "))
 
 
 def main() -> None:
