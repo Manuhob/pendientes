@@ -20,6 +20,7 @@ parser.add_argument('-p', '--print', help="Imprime las tareas pendientes actuale
 parser.add_argument('-c', '--cli', help="Entra en modo CLI", action="store_true")
 parser.add_argument('-rm', '--remove', help="Elimina una tarea especificada con palabras clave separadas por comas", action="store_true")
 parser.add_argument('-i', '--insertar', help="Insertar tarea nueva", action="store_true")
+parser.add_argument('-e', '--editar', help="Editar tarea existente", action="store_true")
 parser.add_argument('-d', '--detalles', help="Imprimir detalles completos de una tarea existente", action="store_true")
 parser.add_argument('-cat', '--categoria', help="Imprimir sublista de tareas pendientes de cierta categoría", action="store")
 
@@ -117,7 +118,6 @@ def eliminarTarea() -> None:
         else:
             tarea = tareas[0]
             titulo = tarea[1]
-            print(f'Tarea "{tarea[1]}" elmininada')
             with open(data, 'r') as f:
                 lines = f.readlines()
             with open(data, 'w') as f:
@@ -125,16 +125,52 @@ def eliminarTarea() -> None:
                     nuevo_titulo = line.split(',')[1]
                     if nuevo_titulo != titulo:
                         f.write(line)
+            print(f'Tarea "{tarea[1]}" eliminada')
     except IndexError:
         print('No existe ninguna tarea pendiente con esas palabras clave')
 
 
 def editarTarea() -> None:
-    pass
+    solicitudes = input('Palabras clave: ').split(', ')
+    tareas, descripciones = buscarCoincidencia(solicitudes)
+    try:
+        if len(tareas) > 1:
+            print("¿Cuál de los siguientes pendientes quieres editar?")
+            imprimirsubLista(tareas)
+            editarTarea()
+        else:
+            # Imprimir tarea a editar
+            tarea = tareas[0]
+            print('\nTarea a editar:')
+            for j in range(len(descripciones)):
+                print(f'{descripciones[j].upper()}: {tareas[0][j]}')
 
-#Métodos para interface de usuario
-def clear() -> None:
-    os.system('clear')
+            with open(data, 'r') as f:
+                lines = f.readlines() #Lista de pendientes en cadena
+
+            # Solicitar nueva información
+            fieldData = [] 
+            fieldnames = lines[0].split(',')
+            print('\nNuevos datos')
+            for field in fieldnames:
+                fieldData.append(input(field.strip()+': '))
+            nuevo_pendiente = ','.join(fieldData)+'\n'
+
+            #Sobreescribir la información existente
+            titulo = tarea[1]
+            with open(data, 'w') as f:
+                for line in lines:
+                    nuevo_titulo = line.split(',')[1]
+                    if nuevo_titulo != titulo:
+                        f.write(line)
+                    else:
+                        f.write(nuevo_pendiente)
+    except IndexError:
+        print('No existe ninguna tarea pendiente con esas palabras clave') 
+
+    #Métodos para interface de usuario 
+def clear() -> None: 
+    os.system('clear') 
     print(f"""{f.YELLOW}
             PENDIENTES
 
@@ -150,6 +186,8 @@ def clear() -> None:
 
 def cli() -> None:
     author = f"""{f.YELLOW}
+            PENDIENTES
+
     Autor: Manuel Sedano Mendoza
     Licencia: MIT 
     Lenguaje: {f.CYAN} Python3{f.YELLOW}
@@ -200,6 +238,8 @@ def main() -> None:
         insertarTarea()
     elif args.detalles:
         imprimirDetalles()
+    elif args.editar:
+        editarTarea()
     else:
         imprimirArbol()
 
